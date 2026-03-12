@@ -1,0 +1,20 @@
+{
+  "name": "ref247/wordpress-plugin",
+  "description": "Ref247 affiliate tracking integration for WordPress",
+  "type": "wordpress-plugin",
+  "license": "GPL-2.0-or-later",
+  "authors": [
+    {
+      "name": "Ref247",
+      "homepage": "https://ref247.io"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Ref247\\": "src/"
+    }
+  },
+  "require": {
+    "php": ">=8.0"
+  }
+}
