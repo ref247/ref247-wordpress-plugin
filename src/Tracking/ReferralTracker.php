@@ -25,7 +25,7 @@ class ReferralTracker
 
         $newData = [];
 
-        // Check for URL parameters
+        // Check for URL parameters, this does not change server state and is safe to do.
         if (isset($_GET['affId'])) {
             $newData['affId'] = sanitize_text_field(wp_unslash($_GET['affId'])); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
         }
