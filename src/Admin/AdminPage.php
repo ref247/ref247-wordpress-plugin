@@ -29,6 +29,113 @@ class AdminPage
     {
         add_action('admin_menu', [$this, 'addMenu']);
         add_action('admin_init', [$this, 'handleActions']);
+        add_action('admin_enqueue_scripts', [$this, 'enqueueScripts']);
+    }
+
+    /**
+     * Enqueue administrative scripts and styles
+     *
+     * @param string $hook The current admin page hook.
+     * @since 1.0.1
+     */
+    public function enqueueScripts($hook)
+    {
+        // Only load on our plugin page
+        if ($hook !== 'toplevel_page_ref247') {
+            return;
+        }
+
+        wp_enqueue_script(
+            'ref247-chartjs',
+            'https://cdn.jsdelivr.net/npm/chart.js',
+            [],
+            '4.4.1',
+            true
+        );
+
+        wp_enqueue_script(
+            'ref247-admin-dashboard',
+            REF247_PLUGIN_URL . 'assets/js/admin-dashboard.js',
+            ['ref247-chartjs'],
+            REF247_PLUGIN_VERSION,
+            true
+        );
+
+        wp_localize_script('ref247-admin-dashboard', 'ref247Data', $this->getChartData());
+    }
+
+    /**
+     * Get chart data for the dashboard
+     * 
+     * @return array
+     */
+    private function getChartData()
+    {
+        $client = new \Ref247\Api\Ref247Client();
+        $orgId = get_option('ref247_org_id');
+        
+        $chartData = $client->getOrgCommissionsChartData($orgId);
+        $referralsChartData = $client->getOrgReferralsChartData($orgId);
+
+        $pendingLabels = [];
+        $pendingSeries = [];
+        $paidLabels = [];
+        $paidSeries = [];
+        
+        if (is_array($chartData)) {
+            if (isset($chartData['pending']) && is_array($chartData['pending'])) {
+                foreach ($chartData['pending'] as $point) {
+                    $pendingLabels[] = $point['date'] ?? '';
+                    $value = 0;
+                    foreach ($point as $key => $val) {
+                        if (is_numeric($val) && $key !== 'date') {
+                            $value = $val;
+                            break;
+                        }
+                    }
+                    $pendingSeries[] = $value;
+                }
+            }
+            if (isset($chartData['paid']) && is_array($chartData['paid'])) {
+                foreach ($chartData['paid'] as $point) {
+                    $paidLabels[] = $point['date'] ?? '';
+                    $value = 0;
+                    foreach ($point as $key => $val) {
+                        if (is_numeric($val) && $key !== 'date') {
+                            $value = $val;
+                            break;
+                        }
+                    }
+                    $paidSeries[] = $value;
+                }
+            }
+        }
+        
+        $referralsLabels = [];
+        $referralsSeries = [];
+        
+        if (is_array($referralsChartData)) {
+            foreach ($referralsChartData as $point) {
+                $referralsLabels[] = $point['date'] ?? '';
+                $value = 0;
+                foreach ($point as $key => $val) {
+                    if (is_numeric($val) && $key !== 'date') {
+                        $value = $val;
+                        break;
+                    }
+                }
+                $referralsSeries[] = $value;
+            }
+        }
+
+        return [
+            'pendingLabels' => $pendingLabels,
+            'pendingSeries' => $pendingSeries,
+            'paidLabels'    => $paidLabels,
+            'paidSeries'    => $paidSeries,
+            'referralsLabels' => $referralsLabels,
+            'referralsSeries' => $referralsSeries,
+        ];
     }
 
     /**
@@ -48,7 +155,7 @@ class AdminPage
         
         // 2. Handle auto-refresh when settings are saved
         // WordPress redirects back to settings page with `settings-updated=true`
-        elseif (isset($_GET['settings-updated']) && sanitize_text_field($_GET['settings-updated']) === 'true' && isset($_GET['page']) && sanitize_text_field($_GET['page']) === 'ref247') {
+        elseif (isset($_GET['settings-updated']) && sanitize_text_field(wp_unslash($_GET['settings-updated'])) === 'true' && isset($_GET['page']) && sanitize_text_field(wp_unslash($_GET['page'])) === 'ref247') {
             $this->performSync(__('API credentials saved and campaigns successfully synced.', 'ref247-affiliate-tracking'));
         }
     }
@@ -392,138 +499,7 @@ class AdminPage
         
         echo '</div>';
 
-        // prepare chart data - split pending and paid
-        $pendingLabels = [];
-        $pendingSeries = [];
-        $paidLabels = [];
-        $paidSeries = [];
-        
-        if (is_array($chartData)) {
-            if (isset($chartData['pending']) && is_array($chartData['pending'])) {
-                foreach ($chartData['pending'] as $point) {
-                    $pendingLabels[] = $point['date'] ?? '';
-                    // Try to find the numeric value (could be commission, amount, value, etc)
-                    $value = 0;
-                    foreach ($point as $key => $val) {
-                        if (is_numeric($val) && $key !== 'date') {
-                            $value = $val;
-                            break;
-                        }
-                    }
-                    $pendingSeries[] = $value;
-                }
-            }
-            if (isset($chartData['paid']) && is_array($chartData['paid'])) {
-                foreach ($chartData['paid'] as $point) {
-                    $paidLabels[] = $point['date'] ?? '';
-                    // Try to find the numeric value
-                    $value = 0;
-                    foreach ($point as $key => $val) {
-                        if (is_numeric($val) && $key !== 'date') {
-                            $value = $val;
-                            break;
-                        }
-                    }
-                    $paidSeries[] = $value;
-                }
-            }
-        }
-        
-        $pendingLabels_js = json_encode($pendingLabels);
-        $pendingSeries_js = json_encode($pendingSeries);
-        $paidLabels_js = json_encode($paidLabels);
-        $paidSeries_js = json_encode($paidSeries);
-
-        // Prepare referrals chart data
-        $referralsLabels = [];
-        $referralsSeries = [];
-        
-        if (is_array($referralsChartData)) {
-            foreach ($referralsChartData as $point) {
-                $referralsLabels[] = $point['date'] ?? '';
-                // Try to find the numeric value
-                $value = 0;
-                foreach ($point as $key => $val) {
-                    if (is_numeric($val) && $key !== 'date') {
-                        $value = $val;
-                        break;
-                    }
-                }
-                $referralsSeries[] = $value;
-            }
-        }
-        
-        $referralsLabels_js = json_encode($referralsLabels);
-        $referralsSeries_js = json_encode($referralsSeries);
-
-        echo '<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>';
-        echo "<script>
-            // Commission Chart
-            const ctxCommissions = document.getElementById('ref247CommissionChart').getContext('2d');
-            new Chart(ctxCommissions, {
-                type: 'line',
-                data: {
-                    labels: $pendingLabels_js,
-                    datasets: [
-                        {
-                            label: 'Pending Commissions',
-                            data: $pendingSeries_js,
-                            borderColor: 'rgba(255,193,7,1)',
-                            backgroundColor: 'rgba(255,193,7,0.2)',
-                            fill: true,
-                            tension: 0.3
-                        },
-                        {
-                            label: 'Paid Commissions',
-                            data: $paidSeries_js,
-                            borderColor: 'rgba(76,175,80,1)',
-                            backgroundColor: 'rgba(76,175,80,0.2)',
-                            fill: true,
-                            tension: 0.3
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: { callback: function(value) { return '$' + value.toFixed(2); } }
-                        }
-                    }
-                }
-            });
-            
-            // Referrals Chart
-            const ctxReferrals = document.getElementById('ref247ReferralsChart').getContext('2d');
-            new Chart(ctxReferrals, {
-                type: 'line',
-                data: {
-                    labels: $referralsLabels_js,
-                    datasets: [
-                        {
-                            label: 'Referrals',
-                            data: $referralsSeries_js,
-                            borderColor: 'rgba(63,81,181,1)',
-                            backgroundColor: 'rgba(63,81,181,0.2)',
-                            fill: true,
-                            tension: 0.3
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: { callback: function(value) { return value.toFixed(0); } }
-                        }
-                    }
-                }
-            });
-        </script>";
+        // Chart.js and initialization are enqueued via enqueueScripts()
     }
 
     /**
@@ -535,8 +511,8 @@ class AdminPage
      */
     public function render()
     {
-        // Determine active tab from URL parameter
-        $tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'dashboard';
+        // Determine active tab from URL parameter, Ignore nonce check for this as not needed for simple tab switching
+        $tab = isset($_GET['tab']) ? sanitize_text_field(wp_unslash($_GET['tab'])) : 'dashboard'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
         ?>
         <div class="wrap">
             <h1 class="wp-heading-inline"><?php esc_html_e('Ref247', 'ref247-affiliate-tracking'); ?></h1>
@@ -558,10 +534,10 @@ class AdminPage
                     <p>
                         <strong><?php esc_html_e('API credentials are missing, invalid, or connection failed.', 'ref247-affiliate-tracking'); ?></strong>
                         <?php
-                        /* translators: %s is a link to the Settings tab */
+                        // translators: %s is a link to the Settings tab
                         printf(
-                            esc_html__('Please visit the %s tab to enter correct credentials and verify the connection.', 'ref247-affiliate-tracking'),
-                            '<a href="?page=ref247&tab=settings">' . esc_html__('Settings', 'ref247-affiliate-tracking') . '</a>'
+                            esc_html__( 'Please visit the %s tab to enter correct credentials and verify the connection.', 'ref247-affiliate-tracking' ),
+                            '<a href="?page=ref247&tab=settings">' . esc_html__( 'Settings', 'ref247-affiliate-tracking' ) . '</a>'
                         );
                         ?>
                     </p>

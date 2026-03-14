@@ -16,12 +16,12 @@ class SignupShortcode
 
     public function handleSubmission()
     {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ref247_signup_nonce'])) {
-            if (!wp_verify_nonce($_POST['ref247_signup_nonce'], 'ref247_signup_action')) {
+        if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ref247_signup_nonce'])) {
+            if (!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['ref247_signup_nonce'])), 'ref247_signup_action')) {
                 return;
             }
 
-            $email = sanitize_email($_POST['ref247_email'] ?? '');
+            $email = sanitize_email(wp_unslash($_POST['ref247_email'] ?? ''));
             if (!is_email($email)) {
                 $this->setFlashMessage('Invalid email address provided.', 'error');
                 return;
@@ -48,7 +48,8 @@ class SignupShortcode
             }
 
             // Redirect to the same page to prevent form resubmission
-            wp_redirect($_SERVER['REQUEST_URI']);
+            $redirect_url = isset($_SERVER['REQUEST_URI']) ? esc_url_raw(wp_unslash($_SERVER['REQUEST_URI'])) : home_url();
+            wp_safe_redirect($redirect_url);
             exit;
         }
     }
@@ -89,13 +90,13 @@ class SignupShortcode
     {
         // Simple session-less transient flash using WordPress transients tied to user IP
         // A better approach in production might be a session or JS redirect, but transient works for simple use cases
-        $ip = $_SERVER['REMOTE_ADDR'];
+        $ip = isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'])) : '127.0.0.1';
         set_transient('ref247_flash_' . md5($ip), ['message' => $message, 'type' => $type], 60);
     }
 
     private function displayFlashMessage()
     {
-        $ip = $_SERVER['REMOTE_ADDR'];
+        $ip = isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'])) : '127.0.0.1';
         $transient_key = 'ref247_flash_' . md5($ip);
         $flash = get_transient($transient_key);
 

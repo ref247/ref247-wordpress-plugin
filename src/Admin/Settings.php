@@ -91,7 +91,7 @@ class Settings
 
             echo '<div style="margin-top: 20px; padding: 15px; background: #fff; border: 1px solid #ccd0d4; border-radius: 4px;">';
             echo '<h4 style="margin-top:0;">WooCommerce Integration</h4>';
-            echo '<p><strong>Integrated Event:</strong> <code>woocommerce_purchase</code>' . ($wcEventId ? " (ID: $wcEventId)" : " (Sync required)") . '</p>';
+            echo '<p><strong>Integrated Event:</strong> <code>woocommerce_purchase</code>' . ($wcEventId ? ' (ID: ' . esc_html($wcEventId) . ')' : ' (Sync required)') . '</p>';
             
             if (!empty($currencies)) {
                 echo '<strong>Supported Currencies:</strong>';
@@ -99,7 +99,7 @@ class Settings
                 foreach ($currencies as $currency) {
                     $name = esc_html($currency['name'] ?? 'Unknown');
                     $id = esc_html($currency['id'] ?? 'N/A');
-                    echo "<li>$name (ID: $id)</li>";
+                    echo '<li>' . esc_html($name) . ' (ID: ' . esc_html($id) . ')</li>';
                 }
                 echo '</ul>';
             } else {
@@ -111,7 +111,7 @@ class Settings
             $formEventId = get_option('ref247_form_event_type_id');
             echo '<div style="margin-top: 20px; padding: 15px; background: #fff; border: 1px solid #ccd0d4; border-radius: 4px;">';
             echo '<h4 style="margin-top:0;">Form Submissions Integration</h4>';
-            echo '<p><strong>Integrated Event:</strong> <code>form_submission</code>' . ($formEventId ? " (ID: $formEventId)" : " (Sync required)") . '</p>';
+            echo '<p><strong>Integrated Event:</strong> <code>form_submission</code>' . ($formEventId ? ' (ID: ' . esc_html($formEventId) . ')' : ' (Sync required)') . '</p>';
             echo '<p style="margin-bottom:0; font-size: 12px; color: #666;">Supports: Contact Form 7, WPForms, and Gravity Forms.</p>';
             echo '</div>';
         } else {
@@ -145,7 +145,7 @@ class Settings
         // Default to true (or '1') if not set
         $value = get_option('ref247_clear_cookie_on_purchase', '1');
         $checked = checked(1, $value, false);
-        echo "<input type='checkbox' name='ref247_clear_cookie_on_purchase' value='1' " . $checked . " />";
+        echo "<input type='checkbox' name='ref247_clear_cookie_on_purchase' value='1' " . $checked . " />"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
         echo "<p class='description'>If checked, the affiliate cookie is deleted upon successful purchase tracking. Uncheck to allow lifetime referral tracking from a single click.</p>";
     }
 }

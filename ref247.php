@@ -35,13 +35,6 @@ require_once REF247_PLUGIN_PATH . 'vendor/autoload.php';
  * Bootstrap the plugin
  */
 function ref247_bootstrap() {
-    // Load plugin text domain for translations
-    load_plugin_textdomain(
-        REF247_TEXT_DOMAIN,
-        false,
-        dirname(plugin_basename(REF247_PLUGIN_FILE)) . '/languages'
-    );
-
     // Initialize the main plugin class
     $plugin = new Ref247\Core\Plugin();
     $plugin->run();

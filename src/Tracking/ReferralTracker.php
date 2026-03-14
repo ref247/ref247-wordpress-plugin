@@ -22,14 +22,14 @@ class ReferralTracker
         $newData = [];
 
         // Check for URL parameters
-        if (isset($_GET['affId'])) {
-            $newData['affId'] = sanitize_text_field($_GET['affId']);
+        if (isset($_GET['affId'])) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+            $newData['affId'] = sanitize_text_field(wp_unslash($_GET['affId']));
         }
-        if (isset($_GET['linkUri'])) {
-            $newData['linkUri'] = sanitize_text_field($_GET['linkUri']);
+        if (isset($_GET['linkUri'])) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+            $newData['linkUri'] = sanitize_text_field(wp_unslash($_GET['linkUri']));
         }
-        if (isset($_GET['clickId'])) {
-            $newData['clickId'] = sanitize_text_field($_GET['clickId']);
+        if (isset($_GET['clickId'])) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+            $newData['clickId'] = sanitize_text_field(wp_unslash($_GET['clickId']));
         }
 
         // If we found any new data from the URL, process and update cookie
@@ -74,8 +74,8 @@ class ReferralTracker
     public static function getStoredData()
     {
         if (isset($_COOKIE[self::STORAGE_KEY])) {
-            // Check if stripslashes is needed (WordPress sometimes adds magic quotes to $_COOKIE)
-            $cookieData = wp_unslash($_COOKIE[self::STORAGE_KEY]);
+            // The cookie contains JSON data that was sanitized before storage; it is unslashed and decoded safely for internal use.
+            $cookieData = wp_unslash($_COOKIE[self::STORAGE_KEY]); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
             $decoded = json_decode($cookieData, true);
             
             if (is_array($decoded)) {
