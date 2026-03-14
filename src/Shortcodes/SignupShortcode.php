@@ -2,6 +2,10 @@
 
 namespace Ref247\Shortcodes;
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 use Ref247\Api\Ref247Client;
 use Ref247\Tracking\ReferralTracker;
 

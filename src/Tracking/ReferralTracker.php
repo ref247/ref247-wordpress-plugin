@@ -2,6 +2,10 @@
 
 namespace Ref247\Tracking;
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 class ReferralTracker
 {
     const STORAGE_KEY = 'ref247_affiliate';
@@ -22,14 +26,14 @@ class ReferralTracker
         $newData = [];
 
         // Check for URL parameters
-        if (isset($_GET['affId'])) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-            $newData['affId'] = sanitize_text_field(wp_unslash($_GET['affId']));
+        if (isset($_GET['affId'])) {
+            $newData['affId'] = sanitize_text_field(wp_unslash($_GET['affId'])); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
         }
-        if (isset($_GET['linkUri'])) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-            $newData['linkUri'] = sanitize_text_field(wp_unslash($_GET['linkUri']));
+        if (isset($_GET['linkUri'])) {
+            $newData['linkUri'] = sanitize_text_field(wp_unslash($_GET['linkUri'])); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
         }
-        if (isset($_GET['clickId'])) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-            $newData['clickId'] = sanitize_text_field(wp_unslash($_GET['clickId']));
+        if (isset($_GET['clickId'])) {
+            $newData['clickId'] = sanitize_text_field(wp_unslash($_GET['clickId'])); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
         }
 
         // If we found any new data from the URL, process and update cookie

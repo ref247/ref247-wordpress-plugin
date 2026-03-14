@@ -2,6 +2,10 @@
 
 namespace Ref247\Core;
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 class Loader
 {
     private $actions = [];

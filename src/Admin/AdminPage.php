@@ -11,6 +11,10 @@
 
 namespace Ref247\Admin;
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 /**
  * Class AdminPage
  *
@@ -47,9 +51,9 @@ class AdminPage
 
         wp_enqueue_script(
             'ref247-chartjs',
-            'https://cdn.jsdelivr.net/npm/chart.js',
+            REF247_PLUGIN_URL . 'assets/js/chart.js',
             [],
-            '4.4.1',
+            REF247_PLUGIN_VERSION,
             true
         );
 
@@ -534,8 +538,8 @@ class AdminPage
                     <p>
                         <strong><?php esc_html_e('API credentials are missing, invalid, or connection failed.', 'ref247-affiliate-tracking'); ?></strong>
                         <?php
-                        // translators: %s is a link to the Settings tab
                         printf(
+                            /* translators: %s is a link to the Settings tab */
                             esc_html__( 'Please visit the %s tab to enter correct credentials and verify the connection.', 'ref247-affiliate-tracking' ),
                             '<a href="?page=ref247&tab=settings">' . esc_html__( 'Settings', 'ref247-affiliate-tracking' ) . '</a>'
                         );

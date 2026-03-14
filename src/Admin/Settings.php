@@ -2,6 +2,10 @@
 
 namespace Ref247\Admin;
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 class Settings
 {
     public function __construct()
@@ -11,10 +15,18 @@ class Settings
 
     public function register()
     {
-        register_setting('ref247_settings', 'ref247_api_key');
-        register_setting('ref247_settings', 'ref247_api_secret');
-        register_setting('ref247_settings', 'ref247_cookie_days');
-        register_setting('ref247_settings', 'ref247_clear_cookie_on_purchase');
+        register_setting('ref247_settings', 'ref247_api_key', [
+            'sanitize_callback' => 'sanitize_text_field',
+        ]);
+        register_setting('ref247_settings', 'ref247_api_secret', [
+            'sanitize_callback' => 'sanitize_text_field',
+        ]);
+        register_setting('ref247_settings', 'ref247_cookie_days', [
+            'sanitize_callback' => 'absint',
+        ]);
+        register_setting('ref247_settings', 'ref247_clear_cookie_on_purchase', [
+            'sanitize_callback' => [$this, 'sanitizeCheckbox'],
+        ]);
 
         add_settings_section(
             'ref247_main',
@@ -147,5 +159,15 @@ class Settings
         $checked = checked(1, $value, false);
         echo "<input type='checkbox' name='ref247_clear_cookie_on_purchase' value='1' " . $checked . " />"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
         echo "<p class='description'>If checked, the affiliate cookie is deleted upon successful purchase tracking. Uncheck to allow lifetime referral tracking from a single click.</p>";
+    }
+    /**
+     * Sanitize checkbox settings
+     * 
+     * @param mixed $input The input value.
+     * @return string '1' or '0'.
+     */
+    public function sanitizeCheckbox($input)
+    {
+        return $input === '1' || $input === 'on' || $input === true || $input === 1 ? '1' : '0';
     }
 }
