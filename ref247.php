@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Ref247 Affiliate Tracking
- * Plugin URI: https://ref247.io
+ * Plugin URI: https://github.com/ref247/ref247-wordpress-plugin
  * Description: Affiliate tracking and commission management for WordPress. Track referrals, manage commissions, and grow your program with powerful analytics.
  * Version: 1.0.0
  * Author: Ref247
