@@ -13,7 +13,7 @@ Affiliate tracking and commission management for WordPress. Track referrals, man
 
 == Description ==
 
-Ref247 Affiliate Tracking is a comprehensive WordPress plugin that integrates with the Ref247.io affiliate management platform. It enables site owners to build and manage an affiliate program directly from their WordPress dashboard.
+Ref247 Affiliate Tracking is a WordPress plugin that integrates with the Ref247.io affiliate management platform. It enables site owners to build and manage an affiliate program directly from their WordPress dashboard.
 
 **Key Features:**
 
@@ -25,7 +25,6 @@ Ref247 Affiliate Tracking is a comprehensive WordPress plugin that integrates wi
 * **Commission Rules** – Flexible commission structures managed in the Ref247.io dashboard
 * **Analytics & Charts** – Visual insights into commission trends and referral performance
 * **Multi-Currency Support** – Track commissions across different currencies
-* **User Role Distribution** – Monitor team composition and user statistics
 
 **Affiliate Program Management:**
 
@@ -123,7 +122,7 @@ Only users with the "manage_options" capability (typically administrators) can a
 
 = Is there support available? =
 
-Yes! Visit the support page [support.ref247.io](https://support.ref247.io) for assistance.
+Yes! Visit the support page [support.ref247.io](https://support.ref247.io) for assistance and custom integrations.
 
 == Screenshots ==
 
@@ -140,7 +139,6 @@ Yes! Visit the support page [support.ref247.io](https://support.ref247.io) for a
 * WooCommerce integration for purchase tracking
 * Multi-form support (WPForms, Gravity Forms, Contact Form 7)
 * Commission and referral analytics
-* User role distribution tracking
 * Multi-currency support
 * Professional admin interface with tabbed navigation
 
