@@ -2,6 +2,8 @@
 
 namespace Ref247\Tracking;
 
+use Ref247\Tracking\StoredData;
+
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -41,7 +43,10 @@ class ReferralTracker
             $stored = self::getStoredData();
             
             // Merge existing data with new data (new overwrites existing)
-            $mergedData = array_merge($stored, $newData);
+            $mergedData = array_merge($stored->toArray(), $newData);
+            
+            // Re-wrap in StoredData to ensure final sanitization
+            $finalData = new StoredData($mergedData);
             
             // Fetch configured cookie days or default to 30
             $cookieDays = (int) get_option('ref247_cookie_days', 30);
@@ -53,7 +58,7 @@ class ReferralTracker
             $expire = time() + ($cookieDays * DAY_IN_SECONDS);
             
             // Serialize data as JSON before storing
-            $jsonValue = wp_json_encode($mergedData);
+            $jsonValue = wp_json_encode($finalData->toArray());
             
             setcookie(
                 self::STORAGE_KEY,
@@ -73,21 +78,21 @@ class ReferralTracker
     /**
      * Retrieve the currently stored affiliate data from the cookie.
      * 
-     * @return array associative array ['affId' => '...', 'clickId' => '...']
+     * @return StoredData
      */
-    public static function getStoredData()
+    public static function getStoredData(): StoredData
     {
         if (isset($_COOKIE[self::STORAGE_KEY])) {
-            // The cookie contains JSON data that was sanitized before storage; it is unslashed and decoded safely for internal use.
+            // The cookie contains JSON data; it is unslashed and decoded safely into a StoredData object.
             $cookieData = wp_unslash($_COOKIE[self::STORAGE_KEY]); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
             $decoded = json_decode($cookieData, true);
             
             if (is_array($decoded)) {
-                return $decoded;
+                return new StoredData($decoded);
             }
         }
         
-        return [];
+        return new StoredData([]);
     }
 
     /**
