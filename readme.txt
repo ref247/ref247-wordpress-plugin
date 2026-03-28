@@ -54,6 +54,17 @@ Simply add your API credentials in the plugin settings, and the plugin automatic
 
 For more information and to get started, visit [Ref247.io](https://ref247.io)
 
+== External services ==
+
+This plugin connects to the Ref247.io API (`https://ref247.io/api`) to provide its core functionality. Ref247.io is an external affiliate tracking and management platform.
+
+The plugin communicates with the external service in the following scenarios:
+- **Affiliate Registration**: When a user signs up as an affiliate through the `[ref247_signup]` shortcode, their email address and tracking parameters (such as the referring affiliate ID) are sent to Ref247.io to create a new affiliate account.
+- **Referral Tracking**: When a conversion occurs (e.g., a WooCommerce order is completed or a supported form is submitted), the plugin sends order details (amount, currency, event type) and tracking IDs to Ref247.io to calculate and assign commissions.
+- **Administrative Synchronization**: When an administrator accesses the Ref247 dashboard or settings in WordPress, the plugin fetches organization statistics, active campaigns, and commission summaries to display them in the admin interface.
+
+This service is provided by Ref247.io: [Terms of Service](https://ref247.io/terms), [Privacy Policy](https://ref247.io/privacy).
+
 == Installation ==
 
 1. **Automatic Installation:**
