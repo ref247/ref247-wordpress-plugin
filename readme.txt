@@ -1,5 +1,5 @@
 === Ref247 Affiliate Tracking ===
-Contributors: kurtportelli
+Contributors: kurtportelli,ref247io
 Donate link: https://ref247.io
 Tags: affiliate, affiliate tracking, referrals, woocommerce, commission
 Requires at least: 6.0
