@@ -283,7 +283,7 @@ class AdminPage
                 $signupPageId = get_option('ref247_signup_page_id');
                 if (!$signupPageId || get_post_status($signupPageId) === false) {
                     $postContent = "<!-- wp:paragraph -->\n";
-                    $postContent .= "<p>Join our affiliate program and start earning rewards for referring new customers! Powered by <a href=\"https://ref247.io\" target=\"_blank\" rel=\"noopener\">Ref247.io</a>, an external affiliate tracking system where you can check your performance, get your unique affiliate links, and download marketing assets.</p>\n";
+                    $postContent .= "<p>Join our affiliate program and start earning rewards for referring new customers!</p>\n";
                     $postContent .= "<!-- /wp:paragraph -->\n\n";
                     $postContent .= "<!-- wp:shortcode -->\n";
                     $postContent .= "[ref247_signup]\n";
