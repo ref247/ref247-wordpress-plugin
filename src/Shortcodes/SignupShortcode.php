@@ -41,8 +41,8 @@ class SignupShortcode
 
             $client = new Ref247Client();
             $affiliateData = ReferralTracker::getStoredData();
-            $affId = isset($affiliateData['affId']) ? $affiliateData['affId'] : null;
-            $linkUri = isset($affiliateData['linkUri']) ? $affiliateData['linkUri'] : null;
+            $affId = $affiliateData->affId;
+            $linkUri = $affiliateData->linkUri;
             $result = $client->addUserToOrganization($orgId, $email, $roleId, $linkUri, $affId);
 
             if ($result === false) {

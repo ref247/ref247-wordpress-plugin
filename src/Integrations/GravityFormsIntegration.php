@@ -24,8 +24,8 @@ class GravityFormsIntegration
     {
         // Get stored affiliate data
         $affiliateData = ReferralTracker::getStoredData();
-        $affId = isset($affiliateData['affId']) ? $affiliateData['affId'] : null;
-        $linkUri = isset($affiliateData['linkUri']) ? $affiliateData['linkUri'] : null;
+        $affId = $affiliateData->affId;
+        $linkUri = $affiliateData->linkUri;
 
         if (!$affId && !$linkUri) {
             return;
