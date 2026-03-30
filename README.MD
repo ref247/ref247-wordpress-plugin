@@ -2,6 +2,9 @@
 
 Ref247 Affiliate Tracking is a WordPress plugin that integrates with the Ref247.io affiliate management platform. It enables site owners to build and manage an affiliate program directly from their WordPress dashboard.
 
+## Wordress Plugin Directory
+Download from [https://wordpress.org/plugins/ref247-affiliate-tracking/](https://wordpress.org/plugins/ref247-affiliate-tracking/)
+
 ## Key Features
 
 - **Real-time Affiliate Dashboard** – View organization statistics, commissions, and affiliate trends at a glance
